@@ -6,17 +6,17 @@ using UnityEngine;
 
 public class CollisionExercise : MonoBehaviour
 {
-    private Rigidbody rigidbody;
+    private Rigidbody rigid;
     private float speed;
     private bool move;
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        rigid = GetComponent<Rigidbody>();
     }
     void Start()
     {
-        rigidbody.useGravity = false;
+        rigid.useGravity = false;
         speed = 10.0f;
         move = true;
     }
