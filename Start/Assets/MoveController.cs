@@ -8,11 +8,14 @@ public class MoveController : MonoBehaviour
 {
     [SerializeField] private float Speed;
     private bool Move;
-    private Vector3 TargrtPoint;
+
     private Vector3 Step;
-    //[SerializeField] private float Force;
 
     private Rigidbody Rigid;
+
+    public GameObject TargrtPoint;
+    
+    public GameObject Target;
 
     void Awake()
     {
@@ -22,7 +25,7 @@ public class MoveController : MonoBehaviour
     void Start()
     {
         Rigid.useGravity = false;
-        TargrtPoint = this.transform.position;
+        TargrtPoint.transform.position = this.transform.position;
         Step = new Vector3(0.0f, 0.0f, 0.0f);
         Speed = 15.0f;
         Move = false;
@@ -36,6 +39,9 @@ public class MoveController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        float key = Input.GetAxis("Q");
+
+        Debug.Log("Q" + key);
         // ** 게임 오브젝트 기준으로 이동.  (로컬)
         //transform.Translate(Vector3.forward * Time.deltaTime * Speed);
 
@@ -51,12 +57,6 @@ public class MoveController : MonoBehaviour
         // ** 카메라를 기준으로 개체를 앞쪽으로 이동.
         //transform.Translate(Vector3.forward * Time.deltaTime * Speed, Camera.main.transform);
 
-
-
-
-
-
-
         // ** 키 입력에 의한 이동방법.
         /*
         float fHor = Input.GetAxis("Horizontal");
@@ -66,10 +66,6 @@ public class MoveController : MonoBehaviour
             0.0f,
             fVer * Time.deltaTime * Speed);
         */
-
-
-
-
 
 
         // ** 마우스 키 입력 방법.
@@ -87,15 +83,6 @@ public class MoveController : MonoBehaviour
             Debug.Log("휠 클릭");
         }
         */
-
-
-
-
-
-
-
-
-
 
         if (Input.GetMouseButton(1))
         {
@@ -115,38 +102,23 @@ public class MoveController : MonoBehaviour
                     Debug.DrawLine(ray.origin, hit.point);
                     Debug.Log(hit.point);
 
-                    TargrtPoint = hit.point;
+                    TargrtPoint.transform.position = hit.point;
                 }
             }
 
-            if (this.transform.position.x > TargrtPoint.x - 0.5f &&
-                this.transform.position.x < TargrtPoint.x + 0.5f &&
-                this.transform.position.z > TargrtPoint.z - 0.5f &&
-                this.transform.position.z < TargrtPoint.z + 0.5f)
-            {
-                Move = false;
-            }
-            else
-            {
-                Move = true;
+            Move = true;
 
-                Step = TargrtPoint - this.transform.position;
-                Step.Normalize();
-                Step.y = 0;
-            }
+            Step = TargrtPoint.transform.position - this.transform.position;
+            Step.Normalize();
+            Step.y = 0;
         }
 
-        if(Move == true)
-        {
-            this.transform.position += Step;
+        if (Move) this.transform.position += Step * Time.deltaTime * Speed;
+    }
 
-            if (this.transform.position.x > TargrtPoint.x - 0.5f &&
-                this.transform.position.x < TargrtPoint.x + 0.5f &&
-                this.transform.position.z > TargrtPoint.z - 0.5f &&
-                this.transform.position.z < TargrtPoint.z + 0.5f)
-            {
-                Move = false;
-            }
-        }
+    //충돌했을때
+    private void OnTriggerEnter(Collision collision)
+    {
+        Move = false;
     }
 }
