@@ -16,21 +16,51 @@ public class MoveController : MonoBehaviour
     private Rigidbody Rigid;
 
 
+
+    // ** Enemy 오브젝트 프리팹을 추가.
+    public GameObject EnemyPrefab;
+
     void Awake()
     {
         Rigid = GetComponent<Rigidbody>();
+
         TargetPoint = GameObject.Find("TargetPoint");
+
+        EnemyPrefab = Resources.Load("Prefabs/Enemy") as GameObject;
+
     }
 
     void Start()
     {
         Rigid.useGravity = false;
-        TargetPoint.transform.position = this.transform.position;
-        Step = new Vector3(0.0f, 0.0f, 0.0f);
-        Speed = 15.0f;
-        Move = false;
-    }
 
+        TargetPoint.transform.position = this.transform.position;
+
+        Step = new Vector3(0.0f, 0.0f, 0.0f);
+
+        Speed = 15.0f;
+
+        Move = false;
+
+        new GameObject("EnableList");
+        new GameObject("DisableList");
+
+        for (int i = 0; i < 5; i++)
+        {
+            ObjectManager.GetInstance.AddObject(
+                Instantiate(EnemyPrefab));
+        }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            GameObject obj = ObjectManager.GetInstance.GetDisableList.Pop();
+            obj.gameObject.SetActive(true);
+            obj.transform.parent = GameObject.Find("EnableList").transform;
+            ObjectManager.GetInstance.GetEnableList.Add(obj);
+        }
+    }
     private void FixedUpdate()
     {
         if (Input.GetMouseButton(1))
@@ -42,7 +72,7 @@ public class MoveController : MonoBehaviour
         }
 
         if (Move == true)
-            this.transform.position += Step * Time.deltaTime * Speed;
+            this.transform.position += Step * Speed;
     }
 
 

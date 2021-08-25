@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectManager : MonoBehaviour
+public class ObjectManager
 {
     private static ObjectManager Instance = null;
 
@@ -15,23 +15,27 @@ public class ObjectManager : MonoBehaviour
 
     private ObjectManager() { }
 
-    public GameObject enemyPrefab;
+    private List<GameObject> enableList = new List<GameObject>();
+    public List<GameObject> GetEnableList { get { return enableList; } }
 
-    private List<GameObject> enemyList = new List<GameObject>();
+    private Stack<GameObject> disableList = new Stack<GameObject>();
+    public Stack<GameObject> GetDisableList { get { return disableList; } }
 
-    private void Start()
+    public void AddObject(GameObject _object)
     {
-        
-        for (int i = 0; i < 5; i++)
-        {
-            GameObject gameObj = Instantiate(enemyPrefab);
+        _object.AddComponent<EnemyController>();
 
-            gameObj.transform.parent = GameObject.Find("EnemyList").transform;
-            
-            gameObj.transform.position = new Vector3(Random.Range(-25, 25), 0.0f, Random.Range(-25, 25));
+        _object.transform.parent = GameObject.Find("DisableList").transform;
 
-            enemyList.Add(gameObj);
-        }
+        _object.GetComponent<BoxCollider>().isTrigger = true;
+
+        _object.transform.position = new Vector3(
+            Random.Range(-25, 25),
+            0.0f,
+            Random.Range(-25, 25));
+
+        _object.gameObject.SetActive(false);
+
+        disableList.Push(_object);
     }
-
 }
