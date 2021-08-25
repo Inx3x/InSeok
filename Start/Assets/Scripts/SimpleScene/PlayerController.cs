@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+class Tank
+{
+    public float speed = 15.0f;
+}
+
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
@@ -11,6 +16,12 @@ public class PlayerController : MonoBehaviour
     {
         Managers.Input.KeyAction -= OnKeyboard;
         Managers.Input.KeyAction += OnKeyboard;
+
+        Tank tank1 = new Tank();
+        Tank tank2 = new Tank();
+        Tank tank3 = new Tank();
+        Tank tank4 = new Tank();
+        Tank tank5 = new Tank();
     }
 
     float _yAngle = 0.0f;
