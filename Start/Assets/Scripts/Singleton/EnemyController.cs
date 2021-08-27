@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// ** 해당 컴퍼넌트를 삽입 : 현재 Rigidbody
 [RequireComponent(typeof(Rigidbody))]
 public class EnemyController : MonoBehaviour
 {
@@ -16,9 +15,9 @@ public class EnemyController : MonoBehaviour
 
     private Rigidbody Rigid;
 
-    private float IdleTime;
+    public GameObject FistPrefab;
 
-    public GameObject Bullet;
+    private bool FistallCheck;
 
     private void Awake()
     {
@@ -43,94 +42,85 @@ public class EnemyController : MonoBehaviour
         // ** isTrigger = true
         Sphere.isTrigger = true;
 
+        FistPrefab = Resources.Load("Prefabs/Fist") as GameObject;
     }
 
     private void Start()
     {
-        // ** 대기 상태 시간.
-        IdleTime = 3.0f;
-
         Speed = 0.05f;
 
         Rigid.useGravity = false;
 
-        //Initialize();
+        FistallCheck = false;
+
+        this.transform.parent = GameObject.Find("EnableList").transform;
+
+        this.transform.position = new Vector3(
+            Random.Range(-25, 25),
+            0.0f,
+            Random.Range(-25, 25));
+
+        Initialize();
+
+        StartCoroutine("Fistall");
     }
 
     private void OnEnable()
     {
+        this.transform.parent = GameObject.Find("EnableList").transform;
+
+        this.transform.position = new Vector3(
+            Random.Range(-25, 25),
+            0.0f,
+            Random.Range(-25, 25));
+
         Initialize();
     }
     private void Update()
     {
-        
+        if (FistallCheck)
+        {
+            GameObject Obj = Instantiate(FistPrefab);
+
+            Obj.gameObject.AddComponent<FistController>();
+
+            FistallCheck = false;
+
+            StartCoroutine("Fistall");
+        }
+
     }
     private void FixedUpdate()
     {
         if (Move == true)
         {
             this.transform.position += Step * Speed;
-            Debug.DrawLine(
-                this.transform.position,
-                WayPoint.transform.position);
-        }
-        else
-        {
-            IdleTime -= Time.deltaTime;
-
-            if (IdleTime < 0)
-            {
-                // ** WayPoint 이동 목표위치 :  난수 함수 = Random.Range(Min, Max)
-                WayPoint.transform.position = new Vector3(
-                    Random.Range(-25, 25),
-                    0.0f,
-                    Random.Range(-25, 25));
-
-                //** 타겟이 생성되었으니 움직일수 있도록 true로 변경
-                Move = true;
-
-                // ** 타겟의 방향을 바라보는 벡터를 구함.
-                Step = WayPoint.transform.position - this.transform.position;
-
-                // ** 방향만 남겨주고
-                Step.Normalize();
-
-                // ** 남은 방향에 Y값은 그 값조차 없애버림. 오작동 방지.
-                Step.y = 0;
-
-                // ** 대기 시간 셋팅.
-                IdleTime = Random.Range(3, 5);
-            }
+            Debug.DrawLine(this.transform.position, WayPoint.transform.position);
         }
     }
 
     private void Initialize()
     {
-        this.transform.parent = GameObject.Find("EnableList").transform;
-
-        // ** WayPoint 이동 목표위치 :  난수 함수 = Random.Range(Min, Max)
         WayPoint.transform.position = new Vector3(
             Random.Range(-25, 25),
             0.0f,
             Random.Range(-25, 25));
 
-        // ** 현재 자신의 위치 : 난수 함수 = Random.Range(Min, Max)
-        this.transform.position = new Vector3(
-            Random.Range(-25, 25),
-            0.0f,
-            Random.Range(-25, 25));
-
-        //** 타겟이 생성되었으니 움직일수 있도록 true로 변경
         Move = true;
 
         // ** 타겟의 방향을 바라보는 벡터를 구함.
         Step = WayPoint.transform.position - this.transform.position;
 
-        // ** 방향만 남겨주고
         Step.Normalize();
 
-        // ** 남은 방향에 Y값은 그 값조차 없애버림. 오작동 방지.
         Step.y = 0;
+
+        WayPoint.transform.position.Set(
+            WayPoint.transform.position.x,
+            0.0f,
+            WayPoint.transform.position.z);
+
+        this.transform.LookAt(WayPoint.transform.position);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -138,11 +128,31 @@ public class EnemyController : MonoBehaviour
         if (other.tag == "WayPoint")
         {
             Move = false;
+            StartCoroutine("EnemyState");
         }
 
         if (other.tag == "Ground")
         {
             Destroy(other.gameObject);
         }
+    }
+
+    IEnumerator EnemyState()
+    {
+        Debug.Log("방향 전환");
+        yield return new WaitForSeconds(Random.Range(3, 5));
+
+        Initialize();
+    }
+
+    IEnumerator Fistall()
+    {
+        yield return new WaitForSeconds(Random.Range(3, 5));
+
+        FistPrefab.transform.position = this.transform.position;
+
+        FistPrefab.transform.LookAt(WayPoint.transform.position);
+
+        FistallCheck = true;
     }
 }
