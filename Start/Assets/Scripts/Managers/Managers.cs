@@ -8,15 +8,16 @@ public class Managers : MonoBehaviour
     public static Managers Instance { get { Init();  return s_instance; } }
 
     InputManager _input = new InputManager();
-    public static InputManager Input { get { return Instance._input; } }
+    ResourceManager _resource = new ResourceManager();
 
-    // Start is called before the first frame update
+    public static InputManager Input { get { return Instance._input; } }
+    public static ResourceManager Resource { get { return Instance._resource; } }
+
     void Start()
     {
         Init();
     }
 
-    // Update is called once per frame
     void Update()
     {
         _input.OnUpdate();

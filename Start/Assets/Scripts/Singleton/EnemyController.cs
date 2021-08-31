@@ -108,7 +108,6 @@ public class EnemyController : MonoBehaviour
 
         Move = true;
 
-        // ** 타겟의 방향을 바라보는 벡터를 구함.
         Step = WayPoint.transform.position - this.transform.position;
 
         Step.Normalize();
