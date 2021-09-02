@@ -53,7 +53,7 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
-        Speed = 0.05f;
+        Speed = 0.02f;
 
         FistallCheck = false;
 
@@ -88,7 +88,8 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if(FistallCheck == true)
+        FistallCheck = false;
+        if (FistallCheck == true)
         {
             GameObject Obj = Instantiate(FistPrefab);
 
@@ -151,11 +152,6 @@ public class EnemyController : MonoBehaviour
         {
             Move = false;
             StartCoroutine("EnemyState");
-        }
-
-        if (other.tag == "Ground")
-        {
-            Destroy(other.gameObject);
         }
     }
 

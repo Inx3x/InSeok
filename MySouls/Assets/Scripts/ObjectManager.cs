@@ -58,7 +58,7 @@ public class ObjectManager
         _Object.transform.parent = GameObject.Find("DisableList").transform;
 
         // ** 생성된 Enemy의 충돌체에 있는 Trigger 기능을 켬.
-        _Object.GetComponent<BoxCollider>().isTrigger = true;
+        _Object.GetComponent<SphereCollider>().isTrigger = true;
 
         // ** 생성된 오브젝트를 비활성화 설정
         _Object.gameObject.SetActive(false);
